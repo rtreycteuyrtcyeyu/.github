@@ -1,0 +1,34 @@
+on:
+    workflow_call:
+        inputs:
+            disable-windows:
+                description: Disable running tests on Windows
+                type: boolean
+                default: false
+                required: false
+jobs:
+    test-linux:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: ["lts/iron", "lts/jod", "latest"]
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - run: npm install
+            - run: npm test
+    test-windows:
+        if: ${{ !inputs.disable-windows }}
+        runs-on: windows-latest
+        strategy:
+            matrix:
+                node-version: ["lts/iron", "lts/jod", "latest"]
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - run: npm install
+            - run: npm test
